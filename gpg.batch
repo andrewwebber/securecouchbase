@@ -1,0 +1,11 @@
+%echo Generating a configuration OpenPGP key
+Key-Type: default
+Subkey-Type: default
+Name-Real: securecouchbase
+Name-Comment: securecouchbase key
+Name-Email: andrewwebber.securecouchbase@github.com
+Expire-Date: 0
+%pubring .pubring.gpg
+%secring .secring.gpg
+%commit
+%echo done
