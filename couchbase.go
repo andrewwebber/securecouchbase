@@ -6,20 +6,24 @@ import (
 	"io"
 )
 
+// EncryptedData a container for encrypted and signed data
 type EncryptedData struct {
 	EncryptedAndSigned []byte
 }
 
+// ProtectedDataSet a container for signed data
 type ProtectedDataSet struct {
 	Data      interface{}
 	Signature []byte
 }
 
+// ProtectedDataRead a json.RawMessage wrapper for protected data
 type ProtectedDataRead struct {
 	Data      json.RawMessage
 	Signature []byte
 }
 
+// SetWithEncryption encrypts data before sending it to couchbase
 func SetWithEncryption(id string, exp int, object interface{}, connection Bucket, provider SecurityProvider) error {
 	enc, err := json.Marshal(object)
 	if err != nil {
@@ -40,6 +44,7 @@ func SetWithEncryption(id string, exp int, object interface{}, connection Bucket
 	return nil
 }
 
+// GetWithEncryption decrypts encrypted data given a key in couchbase
 func GetWithEncryption(id string, object interface{}, connection Bucket, provider SecurityProvider) error {
 	var encryptedData EncryptedData
 	err := connection.Get(id, &encryptedData)
@@ -60,6 +65,7 @@ func GetWithEncryption(id string, object interface{}, connection Bucket, provide
 	return nil
 }
 
+// SetWithSignature signs json structure before putting it in couchbase
 func SetWithSignature(id string, exp int, object interface{}, connection Bucket, provider SecurityProvider) error {
 	enc, err := json.Marshal(object)
 	if err != nil {
@@ -80,6 +86,7 @@ func SetWithSignature(id string, exp int, object interface{}, connection Bucket,
 	return nil
 }
 
+// GetWithSignature verifys a json object with a detached signature
 func GetWithSignature(id string, object interface{}, connection Bucket, provider SecurityProvider) error {
 	var protectedData ProtectedDataRead
 	err := connection.Get(id, &protectedData)
