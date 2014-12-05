@@ -41,7 +41,7 @@ func (p *OpenPGPSecurityProvider) Sign(reader io.Reader, writer io.Writer) error
 	return Sign(reader, writer, p.privateKeyRing)
 }
 
-// Sign signs the contents of a reader and writes the detached signature to the writer
+// SignDetached signs the contents of a reader and writes the detached signature to the writer
 func (p *OpenPGPSecurityProvider) SignDetached(reader io.Reader, writer io.Writer) error {
 	return SignDetached(reader, writer, p.privateKeyRing)
 }
