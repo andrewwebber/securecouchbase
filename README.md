@@ -1,4 +1,4 @@
-securecouchbase
+securecouchbase [![Build Status](https://drone.io/github.com/andrewwebber/securecouchbase/status.png)](https://drone.io/github.com/andrewwebber/securecouchbase/latest)
 ===============
 
 ## Secure Couchbase Project Requirments
