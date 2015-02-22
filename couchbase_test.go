@@ -1,9 +1,10 @@
 package securecouchbase_test
 
 import (
+	"testing"
+
 	"github.com/andrewwebber/securecouchbase"
 	"github.com/andrewwebber/walrus"
-	"testing"
 )
 
 type TestStructure struct {

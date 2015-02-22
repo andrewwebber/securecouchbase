@@ -4,7 +4,19 @@ import (
 	"bytes"
 	"encoding/json"
 	"io"
+	"strings"
 )
+
+const NOT_FOUND string = "Not found"
+
+func IsNotFoundError(err error) bool {
+	// No error?
+	if err == nil {
+		return false
+	}
+
+	return strings.Contains(err.Error(), NOT_FOUND)
+}
 
 // EncryptedData a container for encrypted and signed data
 type EncryptedData struct {
