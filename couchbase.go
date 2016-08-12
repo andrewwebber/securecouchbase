@@ -89,7 +89,7 @@ func SetCasWithEncryption(id string, exp int, object interface{}, connection Buc
 	}
 
 	encryptedData := EncryptedData{encryptedBuffer.Bytes()}
-	if err := connection.Cas(id, exp, cas, encryptedData); err != nil {
+	if _, err = connection.Cas(id, exp, cas, encryptedData); err != nil {
 		return err
 	}
 
@@ -190,7 +190,7 @@ func SetCasWithSignature(id string, exp int, object interface{}, connection Buck
 	}
 
 	protectedData := ProtectedDataSet{object, sigBuffer.Bytes()}
-	if err := connection.Cas(id, exp, cas, protectedData); err != nil {
+	if _, err = connection.Cas(id, exp, cas, protectedData); err != nil {
 		return err
 	}
 

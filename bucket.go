@@ -7,6 +7,7 @@ type Bucket interface {
 	Set(k string, exp int, v interface{}) error
 	Add(k string, exp int, v interface{}) (bool, error)
 	Delete(k string) error
-	Cas(k string, exp int, cas uint64, v interface{}) error
+	Cas(k string, exp int, cas uint64, v interface{}) (uint64, error)
+
 	Incr(k string, amt, def uint64, exp int) (val uint64, err error)
 }
