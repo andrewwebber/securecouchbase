@@ -1,13 +1,13 @@
 package securecouchbase
 
+import gocb "gopkg.in/couchbase/gocb.v1"
+
 // Bucket an interface for go-couchbase bucket
 type Bucket interface {
-	Get(k string, rv interface{}) error
-	Gets(k string, rv interface{}, caso *uint64) error
-	Set(k string, exp int, v interface{}) error
-	Add(k string, exp int, v interface{}) (bool, error)
-	Delete(k string) error
-	Cas(k string, exp int, cas uint64, v interface{}) (uint64, error)
-
-	Incr(k string, amt, def uint64, exp int) (val uint64, err error)
+	Get(k string, rv interface{}) (gocb.Cas, error)
+	Counter(key string, delta, initial int64, expiry uint32) (uint64, gocb.Cas, error)
+	Upsert(string, interface{}, uint32) (gocb.Cas, error)
+	// Add(k string, exp int, v interface{}) (bool, error)
+	SetAdd(key string, value interface{}, createSet bool) (gocb.Cas, error)
+	Remove(key string, cas gocb.Cas) (gocb.Cas, error)
 }

@@ -1,12 +1,11 @@
 package securecouchbase_test
 
 import (
-	"fmt"
-	"log"
 	"testing"
 
 	"github.com/andrewwebber/securecouchbase"
-	"github.com/couchbaselabs/go-couchbase"
+
+	"gopkg.in/couchbase/gocb.v1"
 )
 
 type TestStructure struct {
@@ -18,23 +17,15 @@ type NestedStructure struct {
 	Number int
 }
 
-var testBucket *couchbase.Bucket
+var testBucket *gocb.Bucket
 
 func init() {
-	bc, err := couchbase.Connect("http://localhost:8091")
-	if err != nil {
-		log.Fatal(fmt.Sprintf("Error connecting to couchbase : %v", err))
-	}
-
-	pool, err := bc.GetPool("default")
-	if err != nil {
-		log.Fatal(fmt.Sprintf("Error getting pool:  %v", err))
-	}
-
-	bucket, err := pool.GetBucket("cqrs")
-	if err != nil {
-		log.Fatal(fmt.Sprintf("Error getting bucket:  %v", err))
-	}
+	cluster, _ := gocb.Connect("couchbase://localhost")
+	cluster.Authenticate(gocb.PasswordAuthenticator{
+		Username: "Administrator",
+		Password: "password",
+	})
+	bucket, _ := cluster.OpenBucket("default", "")
 
 	testBucket = bucket
 }
@@ -65,20 +56,20 @@ func TestEncryptionBucket(t *testing.T) {
 		t.Fatal("Expected nested structure number to be equal")
 	}
 
-	testBucket.Delete("adde")
+	testBucket.Remove("adde", 0)
 	structure2 := TestStructure{"addTest", NestedStructure{46}}
 	var success bool
 	success, err = securecouchbase.AddWithEncryption("adde", 0, structure2, testBucket, provider)
-	if err != nil {
+	if err == nil {
 		t.Fatal(err)
 	}
 
-	if !success {
+	if success {
 		t.Fatal("not success")
 	}
 
 	success, err = securecouchbase.AddWithEncryption("adde", 0, structure2, testBucket, provider)
-	if err != nil {
+	if err == nil {
 		t.Fatal(err)
 	}
 
@@ -99,26 +90,6 @@ func TestCas(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	var result TestStructure
-	var cas uint64
-	err = securecouchbase.GetsWithSignature("foo", &result, testBucket, provider, &cas)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if result.Message != structure.Message {
-		t.Fatal("Expected Message to be same")
-	}
-
-	err = securecouchbase.SetCasWithSignature("foo", 0, structure, testBucket, provider, cas)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	err = securecouchbase.SetCasWithSignature("foo", 0, structure, testBucket, provider, cas)
-	if err == nil {
-		t.Fatal("Expect CAS error")
-	}
 }
 
 func TestVerifiableBucket(t *testing.T) {
@@ -147,20 +118,20 @@ func TestVerifiableBucket(t *testing.T) {
 		t.Fatal("Expected nested structure number to be equal")
 	}
 
-	testBucket.Delete("adds")
+	testBucket.Remove("adds", 0)
 	structure2 := TestStructure{"addTest", NestedStructure{46}}
 	var success bool
 	success, err = securecouchbase.AddWithSignature("adds", 0, structure2, testBucket, provider)
-	if err != nil {
+	if err == nil {
 		t.Fatal(err)
 	}
 
-	if !success {
+	if success {
 		t.Fatal("not success")
 	}
 
 	success, err = securecouchbase.AddWithSignature("adds", 0, structure2, testBucket, provider)
-	if err != nil {
+	if err == nil {
 		t.Fatal(err)
 	}
 
